@@ -1,20 +1,20 @@
-class Schedule {
+class Subject {
 
   int? id;
 
   final String studyName;
   final String subjectNumber;
-  final String visit;
-  final DateTime dateTime;
+  final String sex;
+  final DateTime birthDate;
 
-  Schedule({
+  Subject({
 
     this.id,
 
     required this.studyName,
     required this.subjectNumber,
-    required this.visit,
-    required this.dateTime,
+    required this.sex,
+    required this.birthDate,
 
   });
 
@@ -25,18 +25,18 @@ class Schedule {
       'id': id,
       'studyName': studyName,
       'subjectNumber': subjectNumber,
-      'visit': visit,
-      'dateTime': dateTime.toIso8601String(),
+      'sex': sex,
+      'birthDate': birthDate.toIso8601String(),
 
     };
 
   }
 
-  factory Schedule.fromMap(
-    Map<String, dynamic> map,
-  ) {
+  factory Subject.fromMap(
+      Map<String, dynamic> map,
+      ) {
 
-    return Schedule(
+    return Subject(
 
       id: map['id'],
 
@@ -44,10 +44,10 @@ class Schedule {
 
       subjectNumber: map['subjectNumber'],
 
-      visit: map['visit'],
+      sex: map['sex'],
 
-      dateTime: DateTime.parse(
-        map['dateTime'],
+      birthDate: DateTime.parse(
+        map['birthDate'],
       ),
 
     );

@@ -1,57 +1,115 @@
-class Schedule {
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-  int? id;
+import '../models/schedule.dart';
 
-  final String studyName;
-  final String subjectNumber;
-  final String visit;
-  final DateTime dateTime;
+class DatabaseHelper {
+  static final DatabaseHelper instance =
+      DatabaseHelper._init();
 
-  Schedule({
+  static Database? _database;
 
-    this.id,
+  DatabaseHelper._init();
 
-    required this.studyName,
-    required this.subjectNumber,
-    required this.visit,
-    required this.dateTime,
+  Future<Database> get database async {
 
-  });
+    if (_database != null) {
+      return _database!;
+    }
 
-  Map<String, dynamic> toMap() {
+    _database = await _initDB('studyflow.db');
 
-    return {
-
-      'id': id,
-      'studyName': studyName,
-      'subjectNumber': subjectNumber,
-      'visit': visit,
-      'dateTime': dateTime.toIso8601String(),
-
-    };
-
+    return _database!;
   }
 
-  factory Schedule.fromMap(
-      Map<String, dynamic> map,
-      ) {
+  Future<Database> _initDB(
+    String filePath,
+  ) async {
 
-    return Schedule(
+    final dbPath = await getDatabasesPath();
 
-      id: map['id'],
-
-      studyName: map['studyName'],
-
-      subjectNumber: map['subjectNumber'],
-
-      visit: map['visit'],
-
-      dateTime: DateTime.parse(
-        map['dateTime'],
-      ),
-
+    final path = join(
+      dbPath,
+      filePath,
     );
 
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _createDB,
+    );
   }
 
+  Future _createDB(
+    Database db,
+    int version,
+  ) async {
+
+    await db.execute('''
+
+CREATE TABLE schedules(
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+studyName TEXT,
+subjectNumber TEXT,
+visit TEXT,
+dateTime TEXT
+
+)
+
+''');
+  }
+
+  Future<int> insertSchedule(
+    Schedule schedule,
+  ) async {
+
+    final db = await database;
+
+    return await db.insert(
+      'schedules',
+      schedule.toMap(),
+    );
+  }
+
+  Future<List<Schedule>> getSchedules() async {
+
+    final db = await database;
+
+    final maps = await db.query(
+      'schedules',
+      orderBy: 'dateTime',
+    );
+
+    return maps.map(
+      (e) => Schedule.fromMap(e),
+    ).toList();
+  }
+
+  Future<void> deleteSchedule(
+    int id,
+  ) async {
+
+    final db = await database;
+
+    await db.delete(
+      'schedules',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> updateSchedule(
+    Schedule schedule,
+  ) async {
+
+    final db = await database;
+
+    return await db.update(
+      'schedules',
+      schedule.toMap(),
+      where: 'id = ?',
+      whereArgs: [schedule.id],
+    );
+  }
 }

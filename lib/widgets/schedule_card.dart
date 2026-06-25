@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../models/schedule.dart';
 import '../providers/schedule_provider.dart';
+import '../screens/edit_schedule_screen.dart';
 
 class ScheduleCard extends StatelessWidget {
-
   final Schedule schedule;
 
   const ScheduleCard({
@@ -15,15 +15,12 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
-
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
 
       child: ListTile(
-
         leading: const CircleAvatar(
           backgroundColor: Colors.blue,
           child: Icon(
@@ -41,26 +38,59 @@ class ScheduleCard extends StatelessWidget {
           "${schedule.dateTime.year}-${schedule.dateTime.month}-${schedule.dateTime.day}",
         ),
 
-        trailing: IconButton(
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
 
-          icon: const Icon(
-            Icons.delete,
-            color: Colors.red,
-          ),
+          children: [
 
-          onPressed: () {
+            IconButton(
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.indigo,
+              ),
 
-            context.read<ScheduleProvider>()
-                .removeSchedule(schedule);
+              onPressed: () {
 
-          },
+                Navigator.push(
+
+                  context,
+
+                  MaterialPageRoute(
+
+                    builder: (_) => EditScheduleScreen(
+                      schedule: schedule,
+                    ),
+
+                  ),
+
+                );
+
+              },
+
+            ),
+
+            IconButton(
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+
+              onPressed: () async {
+
+                await context
+                    .read<ScheduleProvider>()
+                    .removeSchedule(schedule);
+
+              },
+
+            ),
+
+          ],
 
         ),
 
       ),
 
     );
-
   }
-
 }

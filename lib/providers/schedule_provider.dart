@@ -13,11 +13,11 @@ class ScheduleProvider extends ChangeNotifier {
 
   Future<void> loadSchedules() async {
 
-    schedules =
-        await DatabaseHelper.instance
-            .getSchedules();
+    schedules = await DatabaseHelper.instance
+        .getSchedules();
 
     notifyListeners();
+
   }
 
   Future<void> addSchedule(
@@ -28,6 +28,7 @@ class ScheduleProvider extends ChangeNotifier {
         .insertSchedule(schedule);
 
     await loadSchedules();
+
   }
 
   Future<void> removeSchedule(
@@ -37,10 +38,25 @@ class ScheduleProvider extends ChangeNotifier {
     if (schedule.id != null) {
 
       await DatabaseHelper.instance
-          .deleteSchedule(schedule.id!);
+          .deleteSchedule(
+            schedule.id!,
+          );
 
     }
 
     await loadSchedules();
+
   }
+
+  Future<void> updateSchedule(
+    Schedule schedule,
+  ) async {
+
+    await DatabaseHelper.instance
+        .updateSchedule(schedule);
+
+    await loadSchedules();
+
+  }
+
 }
